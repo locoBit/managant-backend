@@ -1,0 +1,2 @@
+-- Intentionally empty for now.
+-- MySQL official image already creates the database/user based on env vars.

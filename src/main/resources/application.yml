@@ -1,0 +1,33 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: managant-backend
+
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:managant}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: ${DB_USER:managant}
+    password: ${DB_PASSWORD:managant}
+    hikari:
+      # Don't crash on startup if DB is still booting; we'll retry.
+      initialization-fail-timeout: -1
+      connection-timeout: 10000
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+
+  flyway:
+    enabled: true
+    # MySQL can take a bit to become ready (esp. first init). Retry instead of dying.
+    connect-retries: 60
+    connect-retries-interval: 2
+
+logging:
+  level:
+    org.hibernate.SQL: warn
+    org.hibernate.orm.jdbc.bind: warn
