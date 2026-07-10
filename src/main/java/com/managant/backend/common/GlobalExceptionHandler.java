@@ -37,4 +37,11 @@ public class GlobalExceptionHandler {
   public ApiError handleConstraint(ConstraintViolationException ex) {
     return new ApiError(ex.getMessage());
   }
+
+  @ExceptionHandler(IllegalStateException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ApiError handleIllegalState(IllegalStateException ex) {
+    return new ApiError(ex.getMessage());
+  }
 }
+

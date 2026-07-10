@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
 
@@ -30,6 +31,10 @@ public class PersonEntity {
 
   @Column(nullable = false)
   private String curp;
+
+  @JsonSerialize(using = com.managant.backend.crypto.EncryptedStringJsonSerializer.class)
+  @Column(name = "phone_encrypted")
+  private String phoneEncrypted;
 
   @Column(nullable = false)
   private boolean active = true;
@@ -76,6 +81,14 @@ public class PersonEntity {
 
   public void setCurp(String curp) {
     this.curp = curp;
+  }
+
+  public String getPhoneEncrypted() {
+    return phoneEncrypted;
+  }
+
+  public void setPhoneEncrypted(String phoneEncrypted) {
+    this.phoneEncrypted = phoneEncrypted;
   }
 
   public boolean isActive() {

@@ -27,6 +27,12 @@ spring:
     connect-retries: 60
     connect-retries-interval: 2
 
+app:
+  crypto:
+    # Base64-encoded 32-byte key for AES-256-GCM.
+    # Generate one with: openssl rand -base64 32
+    phone-key: ${PHONE_ENCRYPTION_KEY:}
+
 logging:
   level:
     org.hibernate.SQL: warn

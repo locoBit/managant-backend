@@ -33,19 +33,22 @@ public class PersonController {
   private final AreaRepository areaRepo;
   private final RoleRepository roleRepo;
   private final DomainRules rules;
+  private final com.managant.backend.crypto.CryptoService crypto;
 
   public PersonController(
       PersonRepository personRepo,
       PersonMembershipRepository membershipRepo,
       AreaRepository areaRepo,
       RoleRepository roleRepo,
-      DomainRules rules
+      DomainRules rules,
+      com.managant.backend.crypto.CryptoService crypto
   ) {
     this.personRepo = personRepo;
     this.membershipRepo = membershipRepo;
     this.areaRepo = areaRepo;
     this.roleRepo = roleRepo;
     this.rules = rules;
+    this.crypto = crypto;
   }
 
   @GetMapping
@@ -75,6 +78,13 @@ public class PersonController {
     p.setMotherLastName(valueOrEmpty(req.motherLastName()).trim());
     p.setBirthDate(birthDate);
     p.setCurp(curp);
+
+    if (req.phoneNumber() != null && !req.phoneNumber().trim().isEmpty()) {
+      p.setPhoneEncrypted(crypto.encryptToBase64(req.phoneNumber().trim()));
+    } else {
+      p.setPhoneEncrypted(null);
+    }
+
     p.setActive(true);
     p = personRepo.save(p);
 
@@ -117,6 +127,12 @@ public class PersonController {
     p.setMotherLastName(valueOrEmpty(req.motherLastName()).trim());
     p.setBirthDate(birthDate);
     p.setCurp(curp);
+
+    if (req.phoneNumber() != null && !req.phoneNumber().trim().isEmpty()) {
+      p.setPhoneEncrypted(crypto.encryptToBase64(req.phoneNumber().trim()));
+    } else {
+      p.setPhoneEncrypted(null);
+    }
 
     p = personRepo.save(p);
     return toDto(p);
@@ -240,13 +256,21 @@ public class PersonController {
         .map(m -> new PersonMembershipDto(String.valueOf(m.getAreaId()), String.valueOf(m.getRoleId())))
         .toList();
 
+    String phone = null;
+    if (p.getPhoneEncrypted() != null && !p.getPhoneEncrypted().isBlank()) {
+      // If key is missing, do NOT crash listing. Just hide the phone.
+      if (crypto.isConfigured()) {
+        phone = crypto.decryptFromBase64(p.getPhoneEncrypted());
+      }
+    }
+
     return new PersonDto(
         String.valueOf(p.getId()),
         p.getFirstNames(),
         p.getLastName(),
         p.getMotherLastName(),
         p.getBirthDate().toString(),
-        p.getCurp(),
+        phone,
         memberships,
         p.isActive()
     );

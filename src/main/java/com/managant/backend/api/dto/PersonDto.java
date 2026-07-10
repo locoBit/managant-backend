@@ -8,7 +8,7 @@ public record PersonDto(
     String lastName,
     String motherLastName,
     String birthDate,
-    String curp,
+    String phoneNumber,
     List<PersonMembershipDto> areas,
     boolean active
 ) {}
